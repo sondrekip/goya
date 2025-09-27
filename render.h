@@ -18,10 +18,10 @@ typedef struct colour {
     uint8_t a, w, v, u;
 } colour;
 
-/*typedef struct vertex {*/
-/*    int x, y;*/
-/*    uint8_t hardness, width, opacity;*/
-/*} vertex;*/
+typedef struct vertex {
+    int x, y;
+    uint8_t hardness, width, opacity;
+} vertex;
 
 typedef struct fill_vertex {
     int x, y;
