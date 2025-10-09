@@ -1,6 +1,7 @@
 
 # Define the compiler and flags
 cc = clang
+cc = gcc
 cflags = -I/usr/local/include/SDL2 -oz
 ldflags = -L/usr/local/lib -lSDL2
 
