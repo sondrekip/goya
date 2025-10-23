@@ -1,6 +1,6 @@
+#include "math.h"
 
 static uint32_t lcg_seed = 1;
-
 uint32_t lcg_rand() {
 // linear congruential generator
     lcg_seed = (lcg_seed * 1664525 + 1013904223) % 0xFFFFFFFF;

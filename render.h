@@ -36,10 +36,10 @@ typedef struct fill_vertex {
 // extern colour base_layer[WIDTH * HEIGHT];
 extern colour base_layer[];
 
-uint32_t lcg_rand();
-float my_sqrt(float x);
-float my_log(float x);
-float gaussian();
+// uint32_t lcg_rand();
+// float my_sqrt(float x);
+// float my_log(float x);
+// float gaussian();
 
 void clear(
     colour *layer, 
