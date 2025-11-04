@@ -1,6 +1,7 @@
 #include "display.h"
 #include "render.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -11,6 +12,13 @@ SDL_Texture* texture = NULL;
 bool init_SDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return false;
+    }
+    // Initialize SDL_image
+    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        fprintf(stderr, "SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
+        SDL_Quit();
         return false;
     }
     window = SDL_CreateWindow("Vector Drawing", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
@@ -41,6 +49,7 @@ void close_SDL() {
     if (texture != NULL) SDL_DestroyTexture(texture);
     if (renderer != NULL) SDL_DestroyRenderer(renderer);
     if (window != NULL) SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
 }
 

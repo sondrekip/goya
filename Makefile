@@ -2,13 +2,13 @@
 # Define the compiler and flags
 cc = clang
 cflags = -I/usr/local/include/SDL2 -oz
-ldflags = -L/usr/local/lib -lSDL2
+ldflags = -L/usr/local/lib -lSDL2 -lSDL2_image
 
 # Define the target executable
 target = vector_draw
 
 # Define the source files
-sources = main.c render.c display.c
+sources = main.c render.c display.c palette.c
 
 # Define the object files (derived from source files)
 objects = $(sources:.c=.o)
