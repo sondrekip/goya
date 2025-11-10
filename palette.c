@@ -1,8 +1,6 @@
 #include "palette.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <stdbool.h>
+// Platform-agnostic core palette functions
+// No standard library dependencies for Amiga compatibility
 
 uint8_t uvwa_to_index(colour uvwa, palette pal) {
 	// generate a palette index from uvw values
@@ -42,86 +40,15 @@ colour index_to_colour(uint8_t index, palette pal) {
 	return pal.colours[index];
 }
 
-bool load_palette_from_png(const char* filename, palette* pal) {
-	SDL_Surface* surface = IMG_Load(filename);
-	if (surface == NULL) {
-		fprintf(stderr, "Failed to load palette image: %s\n", IMG_GetError());
-		return false;
+// Load palette from raw RGB data (platform-agnostic)
+// rgb_data should be 256 * 3 bytes (R, G, B for each entry)
+void load_palette_from_rgb(uint8_t* rgb_data, palette* pal) {
+	for (int i = 0; i < 256; i++) {
+		pal->colours[i].u = rgb_data[i * 3 + 0];  // R -> U
+		pal->colours[i].v = rgb_data[i * 3 + 1];  // G -> V
+		pal->colours[i].w = rgb_data[i * 3 + 2];  // B -> W
+		pal->colours[i].a = 255;  // Full opacity
 	}
-
-	// Check if image is 256x1 or 16x16 (standard palette sizes)
-	if (surface->w != 256 || surface->h != 1) {
-		if (surface->w == 16 && surface->h == 16) {
-			// Convert 16x16 palette to 256x1 by reading row by row
-			SDL_LockSurface(surface);
-			uint8_t* pixels = (uint8_t*)surface->pixels;
-			int bpp = surface->format->BytesPerPixel;
-			
-			for (int i = 0; i < 256; i++) {
-				int x = i % 16;
-				int y = i / 16;
-				uint8_t* pixel = pixels + (y * surface->pitch + x * bpp);
-				
-				uint32_t pixel_value = 0;
-				if (bpp == 1) {
-					pixel_value = *pixel;
-				} else if (bpp == 2) {
-					pixel_value = *(uint16_t*)pixel;
-				} else if (bpp == 3) {
-					pixel_value = pixel[0] | (pixel[1] << 8) | (pixel[2] << 16);
-				} else if (bpp == 4) {
-					pixel_value = *(uint32_t*)pixel;
-				}
-				
-				uint8_t r, g, b, a;
-				SDL_GetRGBA(pixel_value, surface->format, &r, &g, &b, &a);
-				
-				// Convert RGB to UVW format (treating RGB as UVW axes)
-				pal->colours[i].u = r;
-				pal->colours[i].v = g;
-				pal->colours[i].w = b;
-				pal->colours[i].a = a;
-			}
-			SDL_UnlockSurface(surface);
-		} else {
-			fprintf(stderr, "Palette image must be 256x1 or 16x16 pixels\n");
-			SDL_FreeSurface(surface);
-			return false;
-		}
-	} else {
-		// Read 256x1 palette
-		SDL_LockSurface(surface);
-		uint8_t* pixels = (uint8_t*)surface->pixels;
-		int bpp = surface->format->BytesPerPixel;
-		
-		for (int i = 0; i < 256; i++) {
-			uint8_t* pixel = pixels + (i * bpp);
-			
-			uint32_t pixel_value = 0;
-			if (bpp == 1) {
-				pixel_value = *pixel;
-			} else if (bpp == 2) {
-				pixel_value = *(uint16_t*)pixel;
-			} else if (bpp == 3) {
-				pixel_value = pixel[0] | (pixel[1] << 8) | (pixel[2] << 16);
-			} else if (bpp == 4) {
-				pixel_value = *(uint32_t*)pixel;
-			}
-			
-			uint8_t r, g, b, a;
-			SDL_GetRGBA(pixel_value, surface->format, &r, &g, &b, &a);
-			
-			// Convert RGB to UVW format (treating RGB as UVW axes)
-			pal->colours[i].u = r;
-			pal->colours[i].v = g;
-			pal->colours[i].w = b;
-			pal->colours[i].a = a;
-		}
-		SDL_UnlockSurface(surface);
-	}
-
-	SDL_FreeSurface(surface);
-	return true;
 }
 
 void convert_uvw_to_paletted(colour* uvw_buffer, uint8_t* paletted_buffer, palette* pal, int width, int height) {
