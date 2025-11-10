@@ -58,7 +58,7 @@ void close_SDL() {
 
 // change: add base_layer to arguments:
 void render_to_texture() {
-    SDL_UpdateTexture(texture, NULL, rgb_base_layer, WIDTH * sizeof(uint32_t));
+    SDL_UpdateTexture(texture, NULL, base_layer, WIDTH * sizeof(uint32_t));
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
