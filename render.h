@@ -15,7 +15,6 @@ typedef unsigned char my_bool;
 #define my_abs(x) ((x) < 0 ? -(x) : (x))
 
 typedef struct colour {
-    // uint8_t a, w, v, u;
     uint8_t u, v, w, a;
 } colour;
 
