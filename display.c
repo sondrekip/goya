@@ -58,10 +58,10 @@ void close_SDL() {
 
 // change: add base_layer to arguments:
 void render_to_texture() {
-    SDL_UpdateTexture(texture, NULL, base_layer, WIDTH * sizeof(uint32_t));
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    // SDL_UpdateTexture(texture, NULL, base_layer, WIDTH * sizeof(uint32_t));
+    // SDL_RenderClear(renderer);
+    // SDL_RenderCopy(renderer, texture, NULL, NULL);
+    // SDL_RenderPresent(renderer);
   
     // Map each pixel via SDL to avoid any endianness/packing issues.
     void* pixels = NULL; int pitch = 0;
