@@ -21,15 +21,8 @@ int main(int argc, char* args[]) {
     colour green = (colour){ .u=0, .v=255, .w=100, .a=255 };
     colour blue1 = (colour){ .u=50, .v=180, .w=255, .a=255 };
     colour blue2 = (colour){ .u=20, .v=30, .w=100, .a=255 };
+    colour transparent = (colour){ .u=0, .v=0, .w=0, .a=0 };
 
-    // rgba_colour_t red = (rgba_colour_t){255,20,60,255};
-    // rgba_colour_t orange = (rgba_colour_t){255,80,0,200};
-    // rgba_colour_t black = (rgba_colour_t){255,0,0,0};
-    // rgba_colour_t white = (rgba_colour_t){255, 255, 255, 255};
-    // rgba_colour_t blue = (rgba_colour_t){128, 255, 0, 0};
-    // rgba_colour_t green = (rgba_colour_t){255, 100, 255, 0};
-    // rgba_colour_t blue1 = (rgba_colour_t){255, 255, 180, 50};
-    // rgba_colour_t blue2 = (rgba_colour_t){255, 100, 30, 20};
   
     printf("red: %d %d %d %d\n", red.u, red.v, red.w, red.a);
     printf("blue: %d %d %d %d\n", blue.u, blue.v, blue.w, blue.a);
