@@ -7,6 +7,7 @@
 
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
+extern SDL_PixelFormat* g_fmt;
 
 bool init_SDL();
 void close_SDL();

@@ -12,16 +12,18 @@ int main(int argc, char* args[]) {
     }
 
     // clear(0x000000FF); // Black background
-    // colour red = (colour){100,100,0,255}; // kul roedrosa
-    colour red = (colour){255,20,60,255};
-    colour orange = (colour){255,80,0,200};
-    colour black = (colour){255,0,0,0};
-    colour white = (colour){255, 255, 255, 255};
-    colour blue = (colour){128, 255, 0, 0};
-    colour green = (colour){255, 100, 255, 0};
-    colour blue1 = (colour){255, 255, 180, 50};
-    colour blue2 = (colour){255, 100, 30, 20};
+    // colour red = (colour){ .u=100, .v=100, .w=0, .a=255 }; // kul roedrosa
+    colour red = (colour){ .u=255, .v=60, .w=20, .a=255 };
+    colour orange = (colour){ .u=200, .v=0, .w=80, .a=255 };
+    colour black = (colour){ .u=0, .v=0, .w=0, .a=255 };
+    colour white = (colour){ .u=255, .v=255, .w=255, .a=255 };
+    colour blue = (colour){ .u=0, .v=0, .w=255, .a=128 };
+    colour green = (colour){ .u=0, .v=255, .w=100, .a=255 };
+    colour blue1 = (colour){ .u=50, .v=180, .w=255, .a=255 };
+    colour blue2 = (colour){ .u=20, .v=30, .w=100, .a=255 };
+    colour transparent = (colour){ .u=0, .v=0, .w=0, .a=0 };
 
+  
     printf("red: %d %d %d %d\n", red.u, red.v, red.w, red.a);
     printf("blue: %d %d %d %d\n", blue.u, blue.v, blue.w, blue.a);
 
@@ -69,12 +71,12 @@ int main(int argc, char* args[]) {
     int polysize = sizeof(poly1)/sizeof(vertex);
 
     colour draw_buffer1[WIDTH*HEIGHT];
-    clear(draw_buffer1, (colour){255,0,0,0});
+    clear(draw_buffer1, (colour){ .u=0, .v=0, .w=0, .a=255 });
     subdivide_paint(draw_buffer1, poly1, polysize, 3, 12, blue1, WIDTH, HEIGHT);
     // merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
     colour draw_buffer2[WIDTH*HEIGHT];
-    clear(draw_buffer2, (colour){0,0,0,0});
+    clear(draw_buffer2, transparent);
 
     // int polysize = sizeof(poly)/sizeof(vertex);
     subdivide_paint(draw_buffer2, poly2, polysize, 3, 12, blue2, WIDTH, HEIGHT);
@@ -84,18 +86,18 @@ int main(int argc, char* args[]) {
     // merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
     colour diamond_buffer[WIDTH*HEIGHT];
-    clear(diamond_buffer, (colour){0,0,0,0});
+    clear(diamond_buffer, transparent);
     subdivide_paint(diamond_buffer, diamond, polysize, 3, 12, blue2, WIDTH, HEIGHT);
     mask(draw_buffer1, diamond_buffer, WIDTH, HEIGHT);
     merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
-    clear(draw_buffer1, (colour){0,0,0,0});
+    clear(draw_buffer1, (colour){ .u=0, .v=0, .w=0, .a=0 });
     subdivide_paint(draw_buffer1, poly1, polysize, 3, 14, orange, WIDTH, HEIGHT);
-    clear(draw_buffer2, (colour){0,0,0,0});
+    clear(draw_buffer2, transparent);
     subdivide_paint(draw_buffer2, poly2, polysize, 3, 14, red, WIDTH, HEIGHT);
     merge_buffers(draw_buffer1, draw_buffer2, WIDTH, HEIGHT);
 
-    clear(diamond_buffer, (colour){0,0,0,0});
+    clear(diamond_buffer, transparent);
     subdivide_paint(diamond_buffer, diamond2, polysize, 3, 12, red, WIDTH, HEIGHT);
     mask(draw_buffer1, diamond_buffer, WIDTH, HEIGHT);
     merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);

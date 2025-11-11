@@ -4,11 +4,17 @@
 
 colour base_layer[WIDTH * HEIGHT];
 
-colour red = (colour){255,100,0,255};
-colour black = (colour){255,0,0,0};
-colour white = (colour){255, 255, 255, 255};
-colour blue = (colour){255,255,100,0};
-colour green = (colour){255,100,255,0};
+// colour red = (colour){255,100,0,255};
+// colour black = (colour){255,0,0,0};
+// colour white = (colour){255, 255, 255, 255};
+// colour blue = (colour){255,255,100,0};
+// colour green = (colour){255,100,255,0};
+
+colour red = (colour){ .u=255, .v=0, .w=100, .a=255 };
+colour black = (colour){ .u=0, .v=0, .w=0, .a=255 };
+colour white = (colour){ .u=255, .v=255, .w=255, .a=255 };
+colour blue = (colour){ .u=0, .v=100, .w=255, .a=255 };
+colour green = (colour){ .u=0, .v=255, .w=100, .a=255 };
 
 static uint32_t lcg_seed = 1;
 uint32_t lcg_rand() {
@@ -348,7 +354,7 @@ void subdivide_paint(colour *buffer,
     // printf("max opacity: %d step: %d\n", max_opacity, opacity_step);
 
     colour draw_layer[width * height];
-    clear(draw_layer, (colour){0,0,0,0});
+    clear(draw_layer, (colour){ .u=0, .v=0, .w=0, .a=0 });
     // fill_colour.a = init_opacity;
     fill_colour.a = opacity_step;
 
@@ -363,7 +369,7 @@ void subdivide_paint(colour *buffer,
         subdivide_poly(poly, sub_poly, n_vertices, n_subdivisions, 0.4);
         draw_poly(draw_layer, sub_poly, final_n_vertices, fill_colour);
         merge_buffers(buffer, draw_layer, width, height);
-        clear(draw_layer, (colour){0,0,0,0});
+        clear(draw_layer, (colour){ .u=0, .v=0, .w=0, .a=0 });
     }
 }
 
