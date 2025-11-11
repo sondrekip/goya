@@ -78,7 +78,7 @@ int main(int argc, char* args[]) {
     int polysize = sizeof(poly1)/sizeof(vertex);
 
     colour draw_buffer1[WIDTH*HEIGHT];
-    clear(draw_buffer1, (colour){ .u=0, .v=0, .w=255, .a=255 });
+    clear(draw_buffer1, (colour){ .u=0, .v=0, .w=0, .a=255 });
     subdivide_paint(draw_buffer1, poly1, polysize, 3, 12, blue1, WIDTH, HEIGHT);
     // merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
