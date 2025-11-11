@@ -4,11 +4,17 @@
 
 colour base_layer[WIDTH * HEIGHT];
 
-colour red = (colour){ .u=100, .v=0, .w=255, .a=255 };
+// colour red = (colour){255,100,0,255};
+// colour black = (colour){255,0,0,0};
+// colour white = (colour){255, 255, 255, 255};
+// colour blue = (colour){255,255,100,0};
+// colour green = (colour){255,100,255,0};
+
+colour red = (colour){ .u=255, .v=0, .w=100, .a=255 };
 colour black = (colour){ .u=0, .v=0, .w=0, .a=255 };
 colour white = (colour){ .u=255, .v=255, .w=255, .a=255 };
-colour blue = (colour){ .u=255, .v=100, .w=255, .a=0 };
-colour green = (colour){ .u=100, .v=255, .w=255, .a=0 };
+colour blue = (colour){ .u=0, .v=100, .w=255, .a=255 };
+colour green = (colour){ .u=0, .v=255, .w=100, .a=255 };
 
 static uint32_t lcg_seed = 1;
 uint32_t lcg_rand() {
