@@ -76,7 +76,7 @@ int main(int argc, char* args[]) {
     // merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
     colour draw_buffer2[WIDTH*HEIGHT];
-    clear(draw_buffer2, (colour){ .u=0, .v=0, .w=0, .a=0 });
+    clear(draw_buffer2, transparent);
 
     // int polysize = sizeof(poly)/sizeof(vertex);
     subdivide_paint(draw_buffer2, poly2, polysize, 3, 12, blue2, WIDTH, HEIGHT);
@@ -86,18 +86,18 @@ int main(int argc, char* args[]) {
     // merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
     colour diamond_buffer[WIDTH*HEIGHT];
-    clear(diamond_buffer, (colour){ .u=0, .v=0, .w=0, .a=0 });
+    clear(diamond_buffer, transparent);
     subdivide_paint(diamond_buffer, diamond, polysize, 3, 12, blue2, WIDTH, HEIGHT);
     mask(draw_buffer1, diamond_buffer, WIDTH, HEIGHT);
     merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
     clear(draw_buffer1, (colour){ .u=0, .v=0, .w=0, .a=0 });
     subdivide_paint(draw_buffer1, poly1, polysize, 3, 14, orange, WIDTH, HEIGHT);
-    clear(draw_buffer2, (colour){ .u=0, .v=0, .w=0, .a=0 });
+    clear(draw_buffer2, transparent);
     subdivide_paint(draw_buffer2, poly2, polysize, 3, 14, red, WIDTH, HEIGHT);
     merge_buffers(draw_buffer1, draw_buffer2, WIDTH, HEIGHT);
 
-    clear(diamond_buffer, (colour){ .u=0, .v=0, .w=0, .a=0 });
+    clear(diamond_buffer, transparent);
     subdivide_paint(diamond_buffer, diamond2, polysize, 3, 12, red, WIDTH, HEIGHT);
     mask(draw_buffer1, diamond_buffer, WIDTH, HEIGHT);
     merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
