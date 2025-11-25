@@ -2,7 +2,7 @@
 #include "render.h"
 #include "palette.h"
 
-colour base_layer[WIDTH * HEIGHT];
+uvwa_colour base_layer[WIDTH * HEIGHT];
 
 // colour red = (colour){255,100,0,255};
 // colour black = (colour){255,0,0,0};
@@ -10,11 +10,11 @@ colour base_layer[WIDTH * HEIGHT];
 // colour blue = (colour){255,255,100,0};
 // colour green = (colour){255,100,255,0};
 
-colour red = (colour){ .u=255, .v=0, .w=100, .a=255 };
-colour black = (colour){ .u=0, .v=0, .w=0, .a=255 };
-colour white = (colour){ .u=255, .v=255, .w=255, .a=255 };
-colour blue = (colour){ .u=0, .v=100, .w=255, .a=255 };
-colour green = (colour){ .u=0, .v=255, .w=100, .a=255 };
+uvwa_colour red = (uvwa_colour){ .u=255, .v=0, .w=100, .a=255 };
+uvwa_colour black = (uvwa_colour){ .u=0, .v=0, .w=0, .a=255 };
+uvwa_colour white = (uvwa_colour){ .u=255, .v=255, .w=255, .a=255 };
+uvwa_colour blue = (uvwa_colour){ .u=0, .v=100, .w=255, .a=255 };
+uvwa_colour green = (uvwa_colour){ .u=0, .v=255, .w=100, .a=255 };
 
 static uint32_t lcg_seed = 1;
 uint32_t lcg_rand() {
@@ -219,19 +219,19 @@ void subdivide_poly(vertex *poly,
     }
 }
 
-void clear(colour *layer, colour colour) {
+void clear(uvwa_colour *layer, uvwa_colour colour) {
     for (int i = 0; i < WIDTH * HEIGHT; ++i) {
         layer[i] = colour;
     }
 }
 
-void draw_pixel(colour *layer, int x, int y, colour colour) {
+void draw_pixel(uvwa_colour *layer, int x, int y, uvwa_colour colour) {
     if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
         layer[y * WIDTH + x] = colour;
     }
 }
 
-void draw_line(colour *layer, int x0, int y0, int x1, int y1, colour colour) {
+void draw_line(uvwa_colour *layer, int x0, int y0, int x1, int y1, uvwa_colour colour) {
     int dx = my_abs(x1 - x0);
     int dy = my_abs(y1 - y0);
     int sx = x0 < x1 ? 1 : -1;
@@ -248,7 +248,7 @@ void draw_line(colour *layer, int x0, int y0, int x1, int y1, colour colour) {
     }
 }
 
-void draw_poly(colour *layer, vertex *poly_array, int length, colour colour) {
+void draw_poly(uvwa_colour *layer, vertex *poly_array, int length, uvwa_colour colour) {
     int minY = HEIGHT, maxY = 0;
     // Find the vertical range of the polygon
     for (int i = 0; i < length; i++) {
@@ -294,12 +294,12 @@ void draw_poly(colour *layer, vertex *poly_array, int length, colour colour) {
     }
 }
 
-colour blend_colours(colour base_colour, colour draw_colour) {
+uvwa_colour blend_colours(uvwa_colour base_colour, uvwa_colour draw_colour) {
     float a1 = (float)base_colour.a / 255.0;
     float a2 = (float)draw_colour.a / 255.0;
     float blend_a = a1 + a2 - a1 * a2;
 
-    colour blend_colour;
+    uvwa_colour blend_colour;
     blend_colour.u = (draw_colour.u * a2 + base_colour.u * a1 * (1 - a2)) / blend_a;
     blend_colour.v = (draw_colour.v * a2 + base_colour.v * a1 * (1 - a2)) / blend_a;
     blend_colour.w = (draw_colour.w * a2 + base_colour.w * a1 * (1 - a2)) / blend_a;
@@ -308,7 +308,7 @@ colour blend_colours(colour base_colour, colour draw_colour) {
     return blend_colour;
 }
 
-void merge_buffers(colour *base_buffer, colour *draw_buffer, int width, int height) {
+void merge_buffers(uvwa_colour *base_buffer, uvwa_colour *draw_buffer, int width, int height) {
     for (int i = 0; i < width*height; i++) {
         uint8_t draw_alpha = draw_buffer[i].a;
         if (draw_alpha == 0) {
@@ -323,12 +323,12 @@ void merge_buffers(colour *base_buffer, colour *draw_buffer, int width, int heig
     }
 }
 
-void subdivide_paint(colour *buffer, 
+void subdivide_paint(uvwa_colour *buffer, 
                     vertex *poly, 
                     int n_vertices, 
                     int n_subdivisions, 
                     int n_translucency_levels,
-                    colour fill_colour,
+                    uvwa_colour fill_colour,
                     int width,
                     int height) {
 
@@ -353,8 +353,8 @@ void subdivide_paint(colour *buffer,
     float exp_opacity_factor = 1 + (float) opacity_step / max_opacity;
     // printf("max opacity: %d step: %d\n", max_opacity, opacity_step);
 
-    colour draw_layer[width * height];
-    clear(draw_layer, (colour){ .u=0, .v=0, .w=0, .a=0 });
+    uvwa_colour draw_layer[width * height];
+    clear(draw_layer, (uvwa_colour){ .u=0, .v=0, .w=0, .a=0 });
     // fill_colour.a = init_opacity;
     fill_colour.a = opacity_step;
 
@@ -369,11 +369,11 @@ void subdivide_paint(colour *buffer,
         subdivide_poly(poly, sub_poly, n_vertices, n_subdivisions, 0.4);
         draw_poly(draw_layer, sub_poly, final_n_vertices, fill_colour);
         merge_buffers(buffer, draw_layer, width, height);
-        clear(draw_layer, (colour){ .u=0, .v=0, .w=0, .a=0 });
+        clear(draw_layer, (uvwa_colour){ .u=0, .v=0, .w=0, .a=0 });
     }
 }
 
-void mask(colour *buffer, colour *mask, int width, int height) {
+void mask(uvwa_colour *buffer, uvwa_colour *mask, int width, int height) {
     for (int i = 0; i < width*height; i++) {
         // int mask_alpha = mask[i].a;
         float mask_alpha_factor = mask[i].a / 255.0;
@@ -381,7 +381,7 @@ void mask(colour *buffer, colour *mask, int width, int height) {
     }
 }
 
-// void merge_buffers(colour *base_buffer, colour *draw_buffer, int width, int height) {
+// void merge_buffers(uvwa_colour *base_buffer, uvwa_colour *draw_buffer, int width, int height) {
 //     for (int i = 0; i < width*height; i++) {
 //         uint8_t draw_alpha = draw_buffer[i].a;
 //         if (draw_alpha == 0) {
@@ -398,10 +398,10 @@ void mask(colour *buffer, colour *mask, int width, int height) {
 
 
 
-// void draw_poly(colour *layer, vertex *poly_array, int length, colour colour) {
+// void draw_poly(uvwa_colour *layer, vertex *poly_array, int length, uvwa_colour colour) {
 
 // Example draw_filled_polygon function (simple scanline fill algorithm)
-// void draw_outline(vertex *poly, int n_vertices, colour fill_colour, colour *buffer, int width, int height) {
+// void draw_outline(vertex *poly, int n_vertices, uvwa_colour fill_colour, uvwa_colour *buffer, int width, int height) {
 //     // Simple scanline fill algorithm implementation
 //     // This is a placeholder function, and you may need to use a more sophisticated polygon filling algorithm
 //     for (int i = 0; i < n_vertices; i++) {
@@ -416,9 +416,25 @@ void mask(colour *buffer, colour *mask, int width, int height) {
 //     }
 // }
 
-void draw_outline(colour *layer, vertex *poly_array, int length, colour colour) {
+void draw_outline(uvwa_colour *layer, vertex *poly_array, int length, uvwa_colour colour) {
     for (int i = 0; i < length; i++) {
         int next = (i + 1) % length;
         draw_line(layer, poly_array[i].x, poly_array[i].y, poly_array[next].x, poly_array[next].y, colour);
+    }
+}
+
+// todo:
+void uvwa_to_indexed_image(
+    const uvwa_colour *uvwa_buffer,
+    uint8_t *indexed_buffer,
+    int width,
+    int height,
+    const palette *pal
+) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int pos = x + y * width;
+            indexed_buffer[pos] = uvwa_to_index(&uvwa_buffer[pos], pal);
+        }
     }
 }

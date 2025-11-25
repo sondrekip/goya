@@ -3,6 +3,8 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "palette.h"
+// #include "rgb-pal.h"
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -57,30 +59,45 @@ void close_SDL() {
 }
 
 // change: add base_layer to arguments:
-void render_to_texture() {
-    // SDL_UpdateTexture(texture, NULL, base_layer, WIDTH * sizeof(uint32_t));
-    // SDL_RenderClear(renderer);
-    // SDL_RenderCopy(renderer, texture, NULL, NULL);
-    // SDL_RenderPresent(renderer);
-  
-    // Map each pixel via SDL to avoid any endianness/packing issues.
-    void* pixels = NULL; int pitch = 0;
+void render_to_texture(const rgb_colour *rgb_buffer) {
+    void* pixels = NULL;
+    int pitch = 0;
     if (SDL_LockTexture(texture, NULL, &pixels, &pitch) != 0) {
-      fprintf(stderr, "SDL_LockTexture failed: %s\n", SDL_GetError());
-      return;
+        fprintf(stderr, "SDL_LockTexture failed: %s\n", SDL_GetError());
+        return;
     }
+
     Uint32* dst = (Uint32*)pixels;
-    const int stride = pitch / 4; // RGBA8888
+    int stride = pitch / 4; // RGBA8888 texture
+
     for (int y = 0; y < HEIGHT; ++y) {
-      Uint32* row = dst + y * stride;
-      colour* src = &base_layer[y * WIDTH];
-      for (int x = 0; x < WIDTH; ++x) {
-        // Currently you treat u,v,w as r,g,b (keep that mapping here):
-        row[x] = SDL_MapRGBA(g_fmt, src[x].u, src[x].v, src[x].w, src[x].a);
-      }
+        Uint32* row = dst + y * stride;
+        const rgb_colour* src = &rgb_buffer[y * WIDTH];
+        for (int x = 0; x < WIDTH; ++x) {
+            rgb_colour c = src[x];
+            row[x] = SDL_MapRGB(g_fmt, c.r, c.g, c.b);
+        }
     }
+
     SDL_UnlockTexture(texture);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
+}
+
+// todo:
+void indexed_to_rgb_image(
+    const uint8_t *indexed_buffer,
+    rgb_colour *rgb_buffer,
+    int width,
+    int height,
+    const palette *pal
+) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int pos = x + y * width;
+            uint8_t idx = indexed_buffer[pos];
+            rgb_buffer[pos] = pal->colours[idx];
+        }
+    }
 }

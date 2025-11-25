@@ -4,21 +4,26 @@ cc = clang
 cflags = -I/usr/local/include/SDL2 -oz
 ldflags = -L/usr/local/lib -lSDL2
 
-# Define the target executable
-target = vector_draw
+common_sources = render.c display.c palette.c genpal.c
+common_objects = $(common_sources:.c=.o)
 
-# Define the source files
-sources = main.c render.c display.c
+vector_draw = vector_draw
+vector_draw_sources = main.c
+vector_draw_objects = $(vector_draw_sources:.c=.o)
 
-# Define the object files (derived from source files)
-objects = $(sources:.c=.o)
+testpal = testpal
+testpal_sources = testpal.c
+testpal_objects = $(testpal_sources:.c=.o)
+
 
 # Default target (what 'make' runs by default)
-all: $(target)
+all: $(vector_draw) $(testpal)
 
-# Rule to build the target executable
-$(target): $(objects)
-	$(cc) -o $(target) $(objects) $(ldflags)
+$(vector_draw): $(common_objects) $(vector_draw_objects)
+	$(cc) -o $@ $^ $(ldflags)
+
+$(testpal): $(common_objects) $(testpal_objects)
+	$(cc) -o $@ $^ $(ldflags)
 
 # Rule to compile source files into object files
 %.o: %.c
@@ -26,7 +31,7 @@ $(target): $(objects)
 
 # Rule to clean up the build (remove object files and the executable)
 clean:
-	rm -f $(objects) $(target)
+	rm -f $(vector_draw) $(testpal)
 
 # Phony targets (not real files)
 .PHONY: all clean
