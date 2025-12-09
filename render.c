@@ -1,8 +1,8 @@
-#include <stdio.h>
+// #include <stdio.h>
 #include "render.h"
 #include "palette.h"
 
-uvwa_colour base_layer[WIDTH * HEIGHT];
+// uvwa_colour base_layer[WIDTH * HEIGHT];
 
 // colour red = (colour){255,100,0,255};
 // colour black = (colour){255,0,0,0};
@@ -438,3 +438,89 @@ void uvwa_to_indexed_image(
         }
     }
 }
+
+int xy2i(int x, int y, int width){
+  return y * width + x;
+}
+
+void downsample(uvwa_colour *in_buffer, uvwa_colour *out_buffer, int in_width, int in_height) {
+  // downsamples a buffer by a factor of 2
+  int out_width = in_width/2;
+  int out_height = in_height/2;
+
+  for (int out_x = 0; out_x < out_width; out_x++) {
+    for (int out_y = 0; out_y < out_height; out_y++) {
+      int lower_right_x = out_x * 2 + 1;
+      int lower_right_y = out_y * 2 + 1;
+      int lower_left_x = out_x * 2;
+      int lower_left_y = out_y * 2 + 1;
+      int upper_right_x = out_x * 2;
+      int upper_right_y = out_y * 2 + 1;
+      int upper_left_x = out_x * 2;
+      int upper_left_y = out_y * 2;
+      uvwa_colour* lower_right = &in_buffer[xy2i(lower_right_x, lower_right_y, in_width)];
+      uvwa_colour* lower_left = &in_buffer[xy2i(lower_left_x, lower_left_y, in_width)];
+      uvwa_colour* upper_right = &in_buffer[xy2i(upper_right_x, upper_right_y, in_width)];
+      uvwa_colour* upper_left = &in_buffer[xy2i(upper_left_x, upper_left_y, in_width)];
+
+      uvwa_colour upper_blended_colour = blend_colours(*upper_right, *upper_left);
+      uvwa_colour lower_blended_colour = blend_colours(*lower_right, *lower_left);
+      uvwa_colour blended_colour = blend_colours(upper_blended_colour, lower_blended_colour);
+      
+      out_buffer[xy2i(out_x, out_y, out_width)] = blended_colour;
+    }
+  }
+}
+
+void shuffle_bits(const uint8_t *cbytes, uint8_t **pbytes) {
+  // shuffles the bits from 8 chunky bytes into 8 planar bytes
+  for (int p = 0; p < 8; p++) 
+    *pbytes[p] = 0;
+
+  for (int c = 0; c < 8; c++) {
+    uint8_t cpixel = cbytes[c];
+    
+    for (int p = 0; p < 8; p++) {
+      uint8_t bit = (cpixel >> (7 - p)) & 1;
+      *(pbytes[p]) |= (bit << (7-c));
+    }
+  }
+}
+
+void c2p_old(const uint8_t *cbuffer, uint8_t *pbuffer, int width, int height){
+  int buffer_length = width * height;
+  int n_blocks = buffer_length / 8;
+  int plane_length = buffer_length / 8;
+
+  // make array of bitplane pointers:
+  uint8_t *plane_pointers[8];
+  for (int p = 0; p < 8; p++) {
+    plane_pointers[p] = pbuffer + p * plane_length;
+  }
+
+  for (int block = 0; block < n_blocks; block++) {
+    int block_i = block * 8;
+    shuffle_bits(&cbuffer[block_i], plane_pointers);
+
+    // increment plane pointers:
+    for (int i = 0; i < 8; i++) {
+      plane_pointers[i]++;
+    }
+  }
+}
+
+  void c2p(const uint8_t *cbuffer, uint8_t **plane_pointers, int width, int height){
+  int buffer_length = width * height;
+  int n_blocks = buffer_length / 8;
+
+  for (int block = 0; block < n_blocks; block++) {
+    int block_i = block * 8;
+    shuffle_bits(&cbuffer[block_i], plane_pointers);
+
+    // increment plane pointers:
+    for (int i = 0; i < 8; i++) {
+      plane_pointers[i]++;
+    }
+  }
+}
+

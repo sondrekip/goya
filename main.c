@@ -30,6 +30,7 @@ int main(int argc, char* args[]) {
     // printf("red: %d %d %d %d\n", red.u, red.v, red.w, red.a);
     // printf("blue: %d %d %d %d\n", blue.u, blue.v, blue.w, blue.a);
 
+    uvwa_colour base_layer[WIDTH * HEIGHT];
     clear(base_layer, black);
     // uvwa_colour px0 = base_layer[0];
     // printf("pixel 0: %d %d %d %d\n", px0.u, px0.v, px0.w, px0.a);
@@ -105,12 +106,19 @@ int main(int argc, char* args[]) {
     mask(draw_buffer1, diamond_buffer, WIDTH, HEIGHT);
     merge_buffers(base_layer, draw_buffer1, WIDTH, HEIGHT);
 
+    uvwa_colour downsampled_buffer[WIDTH/2*HEIGHT/2];
+    downsample(base_layer, downsampled_buffer, WIDTH, HEIGHT);
     // ---- render uvwa to indexed ----
-    uint8_t indexed_buffer[WIDTH*HEIGHT];
-    uvwa_to_indexed_image(base_layer, indexed_buffer, WIDTH, HEIGHT, &pal);
+    // uint8_t indexed_buffer[WIDTH*HEIGHT];
+    // uvwa_to_indexed_image(base_layer, indexed_buffer, WIDTH, HEIGHT, &pal);
+    uint8_t indexed_buffer[WIDTH*HEIGHT/4];
+    uvwa_to_indexed_image(downsampled_buffer, indexed_buffer, WIDTH/2, HEIGHT/2, &pal);
+
 
     // ---- render indexed to rgb ----
-    rgb_colour rgb_buffer[WIDTH*HEIGHT];
+    // rgb_colour rgb_buffer[WIDTH*HEIGHT];
+    // indexed_to_rgb_image(indexed_buffer, rgb_buffer, WIDTH, HEIGHT, &pal);
+    rgb_colour rgb_buffer[WIDTH*HEIGHT/4];
     indexed_to_rgb_image(indexed_buffer, rgb_buffer, WIDTH, HEIGHT, &pal);
 
     render_to_texture(rgb_buffer);

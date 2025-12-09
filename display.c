@@ -70,10 +70,10 @@ void render_to_texture(const rgb_colour *rgb_buffer) {
     Uint32* dst = (Uint32*)pixels;
     int stride = pitch / 4; // RGBA8888 texture
 
-    for (int y = 0; y < HEIGHT; ++y) {
+    for (int y = 0; y < HEIGHT/2; ++y) {
         Uint32* row = dst + y * stride;
-        const rgb_colour* src = &rgb_buffer[y * WIDTH];
-        for (int x = 0; x < WIDTH; ++x) {
+        const rgb_colour* src = &rgb_buffer[y * WIDTH/2];
+        for (int x = 0; x < WIDTH/2; ++x) {
             rgb_colour c = src[x];
             row[x] = SDL_MapRGB(g_fmt, c.r, c.g, c.b);
         }

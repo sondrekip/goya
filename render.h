@@ -40,7 +40,7 @@ typedef struct fill_vertex {
 /*} line_vertex;*/
 
 // extern colour base_layer[WIDTH * HEIGHT];
-extern uvwa_colour base_layer[];
+// extern uvwa_colour base_layer[];
 
 uint32_t lcg_rand();
 float my_sqrt(float x);
@@ -150,4 +150,8 @@ void uvwa_to_indexed_image(
     int width,
     int height,
     const palette *pal);
+int xy2i(int x, int y, int width);
+void downsample(uvwa_colour *in_buffer, uvwa_colour *out_buffer, int in_width, int in_height);
+void shuffle_bits(const uint8_t *cbytes, uint8_t **pbytes);
+void c2p(const uint8_t *cbuffer, uint8_t **plane_pointers, int width, int height);
 #endif // RENDER_H
